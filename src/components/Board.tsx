@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PuzzlePiece from './PuzzlePiece';
 
 interface PieceData {
@@ -40,10 +40,77 @@ const initialPieces: PieceData[] = [
 ];
 
 const Board: React.FC = () => {
+    useEffect(() => {
+        const boardElement = document.querySelector('.board');
+        if (boardElement) {
+            boardElement.addEventListener('touchmove', (event) => event.preventDefault(), { passive: false });
+        }
+        return () => {
+            if (boardElement) {
+                boardElement.removeEventListener('touchmove', (event) => event.preventDefault());
+            }
+        };
+    }, []);
+
     const [pieces, setPieces] = useState<PieceData[]>(initialPieces);
     const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null);
     const [draggedPiece, setDraggedPiece] = useState<PieceData | null>(null); // ドラッグ中のピースを保存
     const [dragStartPosition, setDragStartPosition] = useState<{ x: number; y: number } | null>(null); // ドラッグ開始位置を保存
+    const [touchStartPosition, setTouchStartPosition] = useState<{ x: number; y: number } | null>(null);
+
+    const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>, piece: PieceData) => {
+        event.preventDefault();
+        const touch = event.touches[0];
+        setDraggedPiece(piece);
+        setTouchStartPosition({ x: touch.clientX, y: touch.clientY });
+    };
+
+    const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        if (!draggedPiece || !touchStartPosition) return;
+
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - touchStartPosition.x;
+        const deltaY = touch.clientY - touchStartPosition.y;
+
+        const newX = Math.floor(draggedPiece.position.x + deltaX / (600 / BOARD_WIDTH));
+        const newY = Math.floor(draggedPiece.position.y + deltaY / (500 / BOARD_HEIGHT));
+
+        // 枠外に出ないよう補正
+        const correctedX = Math.min(Math.max(newX, 1), BOARD_WIDTH - draggedPiece.size.width + 1);
+        const correctedY = Math.min(Math.max(newY, 1), BOARD_HEIGHT - draggedPiece.size.height + 1);
+
+        setHoverPosition({ x: correctedX, y: correctedY });
+
+        // setDraggedPiece({ ...draggedPiece, position: { x: correctedX, y: correctedY } });
+    };
+
+    const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        if (!draggedPiece || !hoverPosition) return;
+
+        // 他のピースと重なるか確認
+        const isOverlap = pieces.some((piece) => {
+            return (
+                piece.id !== draggedPiece.id && // ドロップされたピース自身は除外
+                hoverPosition.x < piece.position.x + piece.size.width &&
+                hoverPosition.x + draggedPiece.size.width > piece.position.x &&
+                hoverPosition.y < piece.position.y + piece.size.height &&
+                hoverPosition.y + draggedPiece.size.height > piece.position.y
+            );
+        });
+
+        if (!isOverlap) {
+            setPieces((prevPieces) =>
+                prevPieces.map((piece) =>
+                    piece.id === draggedPiece.id ? { ...draggedPiece, position: { x: hoverPosition.x, y: hoverPosition.y } } : piece
+                )
+            );
+        }
+        setDraggedPiece(null);
+        setTouchStartPosition(null);
+    };
+
 
     const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -121,7 +188,7 @@ const Board: React.FC = () => {
         >
             <div
                 className="board"
-                
+
                 style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(6, 1fr)',
@@ -146,12 +213,15 @@ const Board: React.FC = () => {
                         onDragStart={(event) => {
                             event.dataTransfer.setData('text/plain', JSON.stringify(piece));
                             setDraggedPiece(piece); // ドラッグ中のピースを保存
-    
+
                             const startX = event.clientX; // 操作開始時のX座標
                             const startY = event.clientY; // 操作開始時のY座標
                             console.log(`Drag started at X: ${startX}, Y: ${startY}`); // ログ出力
                             setDragStartPosition({ x: startX, y: startY }); // ドラッグ開始位置を保存
                         }}
+                        onTouchStart={(event) => handleTouchStart(event, piece)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
                     />
                 ))}
                 {hoverPosition && draggedPiece && (

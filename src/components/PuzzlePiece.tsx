@@ -7,10 +7,14 @@ interface PuzzlePieceProps {
     isActive: boolean;
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onClick: () => void;
+    onTouchStart: (event: React.TouchEvent<HTMLDivElement>) => void;
+    onTouchMove: (event: React.TouchEvent<HTMLDivElement>) => void;
+    onTouchEnd: (event: React.TouchEvent<HTMLDivElement>) => void;
 }
 
 
-const PuzzlePiece: React.FC<PuzzlePieceProps> = ({ position, size, label, isActive, onDragStart, onClick }) => {
+const PuzzlePiece: React.FC<PuzzlePieceProps> = ({ position, size, label, isActive, onDragStart, onClick,
+    onTouchStart, onTouchMove, onTouchEnd }) => {
     let isVertical = false;
     let fontSize = '1rem';
     if (size.width === 1 && size.height === 1) {
@@ -56,6 +60,9 @@ const PuzzlePiece: React.FC<PuzzlePieceProps> = ({ position, size, label, isActi
             draggable="true"
             onDragStart={onDragStart}
             onClick={onClick}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
         >
             {label}
         </div>
