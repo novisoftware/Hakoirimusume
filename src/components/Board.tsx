@@ -1,115 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PuzzlePiece from './PuzzlePiece';
+import { BoardDefinition, PieceData, Position } from '../defs/BoardDefinition';
 
-interface PieceData {
-    id: number;
-    label: string;
-    size: {
-        width: number;
-        height: number;
-    };
-    position: {
-        x: number;
-        y: number;
-    };
+// props追加
+interface BoardProps {
+    boardDef: BoardDefinition;
 }
 
-interface Definition {
-    width: number; // グリッドの列数
-    height: number; // グリッドの行数
-    pieceData: PieceData[]; // ピースのデータ
-}
-
-interface Position {
-    x: number;
-    y: number;
-}
-
-// 箱入り娘(大家族)
-const DEFINITION_HAKOIRI_BIG_FAMILY: Definition = {
-    width: 6, // グリッドの列数
-    height: 5, // グリッドの行数
-    pieceData: [
-        { id: 1, label: "父", size: { width: 1, height: 2 }, position: { x: 3, y: 1 } },
-        { id: 2, label: "娘", size: { width: 2, height: 2 }, position: { x: 4, y: 1 } },
-        { id: 3, label: "母", size: { width: 1, height: 2 }, position: { x: 6, y: 1 } },
-        { id: 4, label: "丁稚", size: { width: 1, height: 1 }, position: { x: 1, y: 3 } },
-        { id: 5, label: "手代", size: { width: 1, height: 1 }, position: { x: 2, y: 3 } },
-        { id: 6, label: "大番頭", size: { width: 4, height: 1 }, position: { x: 3, y: 3 } },
-        { id: 7, label: "丁稚", size: { width: 1, height: 1 }, position: { x: 1, y: 4 } },
-        { id: 8, label: "番頭", size: { width: 2, height: 1 }, position: { x: 2, y: 4 } },
-        { id: 9, label: "女中", size: { width: 2, height: 1 }, position: { x: 4, y: 4 } },
-        { id: 10, label: "兄嫁", size: { width: 1, height: 1 }, position: { x: 6, y: 4 } },
-        { id: 11, label: "番犬", size: { width: 1, height: 1 }, position: { x: 1, y: 5 } },
-        { id: 12, label: "祖父", size: { width: 2, height: 1 }, position: { x: 2, y: 5 } },
-        { id: 13, label: "祖母", size: { width: 2, height: 1 }, position: { x: 4, y: 5 } },
-        { id: 14, label: "丁稚", size: { width: 1, height: 1 }, position: { x: 6, y: 5 } },
-    ]
-}
-
-// 箱入り娘
-const DEFINITION_HAKOIRI: Definition = {
-    width: 4, // グリッドの列数
-    height: 5, // グリッドの行数
-    pieceData: [
-        { id: 1, label: "父親", size: { width: 1, height: 2 }, position: { x: 1, y: 1 } },
-        { id: 2, label: "娘", size: { width: 2, height: 2 }, position: { x: 2, y: 1 } },
-        { id: 3, label: "母親", size: { width: 1, height: 2 }, position: { x: 4, y: 1 } },
-        { id: 4, label: "祖父", size: { width: 1, height: 2 }, position: { x: 1, y: 3 } },
-        { id: 5, label: "兄弟", size: { width: 2, height: 1 }, position: { x: 2, y: 3 } },
-        { id: 6, label: "祖母", size: { width: 1, height: 2 }, position: { x: 4, y: 3 } },
-        { id: 7, label: "華道", size: { width: 1, height: 1 }, position: { x: 2, y: 4 } },
-        { id: 8, label: "茶道", size: { width: 1, height: 1 }, position: { x: 3, y: 4 } },
-        { id: 9, label: "和裁", size: { width: 1, height: 1 }, position: { x: 1, y: 5 } },
-        { id: 10, label: "書道", size: { width: 1, height: 1 }, position: { x: 4, y: 5 } },
-    ]
-}
-
-// 将棋パズル
-const DEFINITION_SHOGI: Definition = {
-    width: 4, // グリッドの列数
-    height: 5, // グリッドの行数
-    pieceData: [
-        { id: 1, label: "角行", size: { width: 1, height: 2 }, position: { x: 1, y: 1 } },
-        { id: 2, label: "王", size: { width: 2, height: 2 }, position: { x: 2, y: 1 } },
-        { id: 3, label: "飛車", size: { width: 1, height: 2 }, position: { x: 4, y: 1 } },
-        { id: 4, label: "香車", size: { width: 1, height: 1 }, position: { x: 1, y: 3 } },
-        { id: 5, label: "桂馬", size: { width: 1, height: 1 }, position: { x: 2, y: 3 } },
-        { id: 6, label: "桂馬", size: { width: 1, height: 1 }, position: { x: 3, y: 3 } },
-        { id: 7, label: "香車", size: { width: 1, height: 1 }, position: { x: 4, y: 3 } },
-        { id: 8, label: "金", size: { width: 2, height: 1 }, position: { x: 1, y: 4 } },
-        { id: 9, label: "銀", size: { width: 2, height: 1 }, position: { x: 3, y: 4 } },
-        { id: 10, label: "歩兵", size: { width: 1, height: 1 }, position: { x: 1, y: 5 } },
-        { id: 11, label: "歩兵", size: { width: 1, height: 1 }, position: { x: 4, y: 5 } },
-    ]
-}
-
-// 華容道
-const DEFINITION_KAYOUDOU: Definition = {
-    width: 4, // グリッドの列数
-    height: 5, // グリッドの行数
-    pieceData: [
-        { id: 1, label: "黄忠", size: { width: 1, height: 2 }, position: { x: 1, y: 1 } },
-        { id: 2, label: "曹操", size: { width: 2, height: 2 }, position: { x: 2, y: 1 } },
-        { id: 3, label: "張飛", size: { width: 1, height: 2 }, position: { x: 4, y: 1 } },
-
-        { id: 4, label: "兵", size: { width: 1, height: 1 }, position: { x: 1, y: 3 } },
-        { id: 5, label: "馬超", size: { width: 1, height: 2 }, position: { x: 1, y: 4 } },
-        { id: 6, label: "関羽", size: { width: 2, height: 1 }, position: { x: 2, y: 3 } },
-        { id: 7, label: "趙雲", size: { width: 1, height: 2 }, position: { x: 4, y: 3 } },
-        { id: 9, label: "兵", size: { width: 1, height: 1 }, position: { x: 4, y: 5 } },
-
-        { id: 8, label: "兵", size: { width: 1, height: 1 }, position: { x: 2, y: 4 } },
-        { id: 9, label: "兵", size: { width: 1, height: 1 }, position: { x: 3, y: 4 } },
-    ]
-}
-
-
-// const boardDef = DEFINITION_HAKOIRI; // 初期定義を設定
-// const boardDef = DEFINITION_SHOGI; // 初期定義を設定
-const boardDef = DEFINITION_KAYOUDOU; // 初期定義を設定
-
-const Board: React.FC = () => {
+const Board: React.FC<BoardProps> = ({ boardDef }) => {
     useEffect(() => {
         const boardElement = document.querySelector('.board');
         if (boardElement) {
@@ -123,6 +21,11 @@ const Board: React.FC = () => {
     }, []);
 
     const [pieces, setPieces] = useState<PieceData[]>(boardDef.pieceData); // ピースの初期データを設定
+    // boardDefが変わったらpiecesをリセット
+    useEffect(() => {
+        setPieces(boardDef.pieceData);
+    }, [boardDef]);
+
     const [hoverPosition, setHoverPosition] = useState<Position | null>(null);
     const [draggedPiece, setDraggedPiece] = useState<PieceData | null>(null); // ドラッグ中のピースを保存
     const [dragStartPosition, setDragStartPosition] = useState<Position | null>(null); // ドラッグ開始位置を保存
