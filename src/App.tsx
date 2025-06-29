@@ -14,7 +14,7 @@ const puzzleOptions = [
     { label: '華容道', value: 'kayou', definition: DEFINITION_KAYOUDOU, header: '華容道', message: '華容道を解こう。' },
 ];
 const App: React.FC = () => {
-    const [selected, setSelected] = useState('kayou');
+    const [selected, setSelected] = useState('hakoiri'); // 初期値を箱入り娘に設定
     const current = puzzleOptions.find(opt => opt.value === selected) || puzzleOptions[2];
     return (
         <div className="App">
