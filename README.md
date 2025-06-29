@@ -1,13 +1,16 @@
 # Hakoirimusume React App
 箱入り娘。スライドパズルの一種です。
+- デモを https://novisoftware.github.io/demo/Hakoiri/ に置いています。
+- 「大家族版」の他に、箱入り娘、将棋パズル、華容道パズルを追加しました(6.29)。
 - 詳しくはWikipediaの[箱入り娘](https://ja.wikipedia.org/wiki/%E7%AE%B1%E5%85%A5%E3%82%8A%E5%A8%98_(%E3%83%91%E3%82%BA%E3%83%AB))を参照してください。
-- 以降の執筆ははGitHub Copilotにお任せしています。
+- 以降の執筆はほぼGitHub Copilotにお任せしています。
 
 
 このプロジェクトは「箱入り娘」という和製のパズルゲームをReactで実装したアプリケーションです。ユーザーはパズルピースをボード上に配置し、ゲームを楽しむことができます。
 
 ## 構成ファイル
 
+- `src/defs/boards/`: 盤面データの定義。
 - `src/components/Board.tsx`: ゲームボードを表示し、ボードの状態を管理するコンポーネント。
 - `src/components/PuzzlePiece.tsx`: 個々のパズルピースを表すコンポーネント。
 - `src/components/Header.tsx`: アプリケーションのヘッダーを表示するコンポーネント。
@@ -22,7 +25,7 @@
 
 1. リポジトリをクローンします。
    ```
-   git clone <repository-url>
+   git clone リポジトリのURL
    ```
 
 2. プロジェクトディレクトリに移動します。
