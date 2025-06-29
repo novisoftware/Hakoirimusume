@@ -31,6 +31,15 @@ const Board: React.FC<BoardProps> = ({ boardDef }) => {
     const [dragStartPosition, setDragStartPosition] = useState<Position | null>(null); // ドラッグ開始位置を保存
     const [touchStartPosition, setTouchStartPosition] = useState<Position | null>(null);
 
+    // リセット処理
+    const handleReset = () => {
+        setPieces(boardDef.pieceData);
+        setHoverPosition(null);
+        setDraggedPiece(null);
+        setDragStartPosition(null);
+        setTouchStartPosition(null);
+    };
+
     const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>, piece: PieceData) => {
         event.preventDefault();
         const touch = event.touches[0];
@@ -157,6 +166,14 @@ const Board: React.FC<BoardProps> = ({ boardDef }) => {
     const gridTemplateRows = `repeat(${boardDef.height}, 1fr)`;
 
     return (
+        <>
+            {/* リセットボタン */}
+            <button
+                style={{ margin: '8px 0', zIndex: 2 }}
+                onClick={handleReset}
+            >
+                最初からやり直す
+            </button>      
         <div
             style={{
                 position: 'relative',
@@ -235,6 +252,7 @@ const Board: React.FC<BoardProps> = ({ boardDef }) => {
                 }}
             />
         </div>
+        </>
     );
 };
 
