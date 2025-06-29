@@ -12,9 +12,9 @@ const DEFINITION_KAYOUDOU: BoardDefinition = {
         { id: 5, label: "馬超", size: { width: 1, height: 2 }, position: { x: 1, y: 4 } },
         { id: 6, label: "関羽", size: { width: 2, height: 1 }, position: { x: 2, y: 3 } },
         { id: 7, label: "趙雲", size: { width: 1, height: 2 }, position: { x: 4, y: 3 } },
-        { id: 9, label: "兵", size: { width: 1, height: 1 }, position: { x: 4, y: 5 } },
-        { id: 8, label: "兵", size: { width: 1, height: 1 }, position: { x: 2, y: 4 } },
-        { id: 9, label: "兵", size: { width: 1, height: 1 }, position: { x: 3, y: 4 } },
+        { id: 8, label: "兵", size: { width: 1, height: 1 }, position: { x: 4, y: 5 } },
+        { id: 9, label: "兵", size: { width: 1, height: 1 }, position: { x: 2, y: 4 } },
+        { id: 10, label: "兵", size: { width: 1, height: 1 }, position: { x: 3, y: 4 } },
     ]
 }
 
